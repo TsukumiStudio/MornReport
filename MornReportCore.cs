@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using InstantReplay;
@@ -39,12 +41,16 @@ namespace MornLib
             _session = null;
             Debug.Log($"[MornReport] 動画をエクスポートしました: {path}");
             var fileData = File.ReadAllBytes(path);
-            var form = new WWWForm();
+            var deviceInfo = $"{SystemInfo.deviceName} ({SystemInfo.operatingSystem})";
+            var dateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var content = $"{deviceInfo}\n{dateTime}";
             if (message != null)
             {
-                form.AddField("content", message);
+                content += $"\n{message}";
             }
 
+            var form = new WWWForm();
+            form.AddField("content", content);
             form.AddBinaryData("file", fileData, "report.mp4", "video/mp4");
             using var request = UnityWebRequest.Post(webhookUrl, form);
             await request.SendWebRequest();
@@ -58,3 +64,4 @@ namespace MornLib
         }
     }
 }
+#endif
