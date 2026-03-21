@@ -13,40 +13,49 @@ namespace MornLib
 
         public override IEnumerable<(string key, Action action)> GetMenuItems()
         {
-            _senderNameInput = MornReportCore.SenderName;
-            _recordSecondsInput = MornReportCore.RecordSeconds.ToString("F0");
-            _bufferSizeMBInput = (MornReportCore.BufferSize / (1024 * 1024)).ToString();
+            _senderNameInput = MornReportUtil.SenderName;
+            _recordSecondsInput = MornReportUtil.RecordSeconds.ToString("F0");
+            _bufferSizeMBInput = (MornReportUtil.BufferSize / (1024 * 1024)).ToString();
             yield return ("レポート", () =>
             {
                 using (new GUILayout.VerticalScope())
                 {
                     GUILayout.Label("--- 送信者 ---");
-                    _senderNameInput = GUILayout.TextField(_senderNameInput);
-                    if (_senderNameInput != MornReportCore.SenderName)
+                    var newName = GUILayout.TextField(_senderNameInput);
+                    if (newName != _senderNameInput)
                     {
-                        MornReportCore.SenderName = _senderNameInput;
+                        _senderNameInput = newName;
+                        MornReportUtil.SenderName = newName;
                     }
 
-                    var includeSystemInfo = GUILayout.Toggle(MornReportCore.IncludeSystemInfo, "システム情報を添える");
-                    if (includeSystemInfo != MornReportCore.IncludeSystemInfo)
+                    var includeSystemInfo = GUILayout.Toggle(MornReportUtil.IncludeSystemInfo, "システム情報を添える");
+                    if (includeSystemInfo != MornReportUtil.IncludeSystemInfo)
                     {
-                        MornReportCore.IncludeSystemInfo = includeSystemInfo;
+                        MornReportUtil.IncludeSystemInfo = includeSystemInfo;
                     }
 
                     GUILayout.Space(10);
                     GUILayout.Label("--- 録画設定 ---");
-                    GUILayout.Label($"録画秒数: {MornReportCore.RecordSeconds}秒");
-                    _recordSecondsInput = GUILayout.TextField(_recordSecondsInput);
-                    if (float.TryParse(_recordSecondsInput, out var seconds) && seconds > 0)
+                    GUILayout.Label($"録画秒数: {MornReportUtil.RecordSeconds}秒");
+                    var newSeconds = GUILayout.TextField(_recordSecondsInput);
+                    if (newSeconds != _recordSecondsInput)
                     {
-                        MornReportCore.RecordSeconds = seconds;
+                        _recordSecondsInput = newSeconds;
+                        if (float.TryParse(newSeconds, out var seconds) && seconds > 0)
+                        {
+                            MornReportUtil.RecordSeconds = seconds;
+                        }
                     }
 
-                    GUILayout.Label($"バッファサイズ: {MornReportCore.BufferSize / (1024 * 1024)}MB");
-                    _bufferSizeMBInput = GUILayout.TextField(_bufferSizeMBInput);
-                    if (long.TryParse(_bufferSizeMBInput, out var mb) && mb > 0)
+                    GUILayout.Label($"バッファサイズ: {MornReportUtil.BufferSize / (1024 * 1024)}MB");
+                    var newMB = GUILayout.TextField(_bufferSizeMBInput);
+                    if (newMB != _bufferSizeMBInput)
                     {
-                        MornReportCore.BufferSize = mb * 1024 * 1024;
+                        _bufferSizeMBInput = newMB;
+                        if (long.TryParse(newMB, out var mb) && mb > 0)
+                        {
+                            MornReportUtil.BufferSize = mb * 1024 * 1024;
+                        }
                     }
                 }
             });

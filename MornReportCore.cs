@@ -10,24 +10,17 @@ namespace MornLib
     /// <summary>InstantReplayを利用した画面録画とDiscord Webhook送信</summary>
     public static class MornReportCore
     {
-        private const float DefaultSeconds = 120f;
-        private const long DefaultBufferSize = 120 * 1024 * 1024;
-        private const string DefaultSenderName = "名無しの開発者";
         private static RealtimeInstantReplaySession _session;
         private static float _seconds;
-        public static float RecordSeconds { get; set; } = DefaultSeconds;
-        public static long BufferSize { get; set; } = DefaultBufferSize;
-        public static string SenderName { get; set; } = DefaultSenderName;
-        public static bool IncludeSystemInfo { get; set; } = true;
 
         /// <summary>録画を開始する</summary>
         public static void Start()
         {
             _session?.Dispose();
             var options = RealtimeEncodingOptions.Default;
-            options.MaxMemoryUsageBytesForCompressedFrames = BufferSize;
+            options.MaxMemoryUsageBytesForCompressedFrames = MornReportUtil.BufferSize;
             _session = new RealtimeInstantReplaySession(options);
-            _seconds = RecordSeconds;
+            _seconds = MornReportUtil.RecordSeconds;
             Debug.Log($"[MornReport] 録画を開始しました（{_seconds}秒）");
         }
 
@@ -62,8 +55,8 @@ namespace MornLib
 
         private static string BuildContent(string message)
         {
-            var senderLine = SenderName;
-            if (IncludeSystemInfo)
+            var senderLine = MornReportUtil.SenderName;
+            if (MornReportUtil.IncludeSystemInfo)
             {
                 senderLine += $" ({SystemInfo.deviceName} / {SystemInfo.operatingSystem})";
             }
