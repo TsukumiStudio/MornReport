@@ -19,7 +19,11 @@ namespace MornLib
             _session?.Dispose();
             var options = RealtimeEncodingOptions.Default;
             options.MaxMemoryUsageBytesForCompressedFrames = MornReportUtil.BufferSize;
-            _session = new RealtimeInstantReplaySession(options);
+            options.ForceReadback = true;
+            _session = new RealtimeInstantReplaySession(
+                options,
+                onException: e => Debug.LogError($"[MornReport] 録画エラー: {e}")
+            );
             _seconds = MornReportUtil.RecordSeconds;
             Debug.Log($"[MornReport] 録画を開始しました（{_seconds}秒）");
         }
