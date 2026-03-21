@@ -3,7 +3,8 @@
     "rootNamespace": "MornLib",
     "references": [
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:1050604f2d3a84fcabcc4e9b9ff6745b"
+        "GUID:1050604f2d3a84fcabcc4e9b9ff6745b",
+        "GUID:dadc2fee866e04157b6aa9c8ff475e67"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

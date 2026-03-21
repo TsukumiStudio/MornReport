@@ -11,18 +11,23 @@ namespace MornLib
     public static class MornReportCore
     {
         private const float DefaultSeconds = 120f;
-        private const long BufferSize = 120 * 1024 * 1024;
+        private const long DefaultBufferSize = 120 * 1024 * 1024;
+        private const string DefaultSenderName = "名無しの開発者";
         private static RealtimeInstantReplaySession _session;
         private static float _seconds;
+        public static float RecordSeconds { get; set; } = DefaultSeconds;
+        public static long BufferSize { get; set; } = DefaultBufferSize;
+        public static string SenderName { get; set; } = DefaultSenderName;
+        public static bool IncludeSystemInfo { get; set; } = true;
 
         /// <summary>録画を開始する</summary>
-        public static void Start(float seconds = DefaultSeconds)
+        public static void Start()
         {
             _session?.Dispose();
             var options = RealtimeEncodingOptions.Default;
             options.MaxMemoryUsageBytesForCompressedFrames = BufferSize;
             _session = new RealtimeInstantReplaySession(options);
-            _seconds = seconds;
+            _seconds = RecordSeconds;
             Debug.Log($"[MornReport] 録画を開始しました（{_seconds}秒）");
         }
 
@@ -40,14 +45,7 @@ namespace MornLib
             _session = null;
             Debug.Log($"[MornReport] 動画をエクスポートしました: {path}");
             var fileData = File.ReadAllBytes(path);
-            var deviceInfo = $"{SystemInfo.deviceName} ({SystemInfo.operatingSystem})";
-            var dateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            var content = $"{deviceInfo}\n{dateTime}";
-            if (message != null)
-            {
-                content += $"\n{message}";
-            }
-
+            var content = BuildContent(message);
             var form = new WWWForm();
             form.AddField("content", content);
             form.AddBinaryData("file", fileData, "report.mp4", "video/mp4");
@@ -60,6 +58,24 @@ namespace MornLib
             }
 
             Debug.Log("[MornReport] 動画を送信しました");
+        }
+
+        private static string BuildContent(string message)
+        {
+            var senderLine = SenderName;
+            if (IncludeSystemInfo)
+            {
+                senderLine += $" ({SystemInfo.deviceName} / {SystemInfo.operatingSystem})";
+            }
+
+            var dateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var content = $"{senderLine}\n{dateTime}";
+            if (message != null)
+            {
+                content += $"\n{message}";
+            }
+
+            return content;
         }
     }
 }
