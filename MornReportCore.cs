@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
@@ -64,4 +63,3 @@ namespace MornLib
         }
     }
 }
-#endif
