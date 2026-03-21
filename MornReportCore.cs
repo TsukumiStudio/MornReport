@@ -16,6 +16,11 @@ namespace MornLib
         /// <summary>録画を開始する</summary>
         public static void Start()
         {
+            if (!MornReportUtil.Enabled)
+            {
+                return;
+            }
+
             _session?.Dispose();
             var options = RealtimeEncodingOptions.Default;
             options.MaxMemoryUsageBytesForCompressedFrames = MornReportUtil.BufferSize;
@@ -32,6 +37,11 @@ namespace MornLib
         /// <summary>録画を停止し、Discord Webhookに動画を送信する</summary>
         public static async UniTask SendAsync(string webhookUrl, string message = null)
         {
+            if (!MornReportUtil.Enabled)
+            {
+                return;
+            }
+
             if (_session == null)
             {
                 Debug.LogError("[MornReport] Start()が呼ばれていません");

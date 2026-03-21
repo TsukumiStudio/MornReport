@@ -13,7 +13,9 @@ namespace MornLib
         private const string KeyBufferSizeMB = KeyPrefix + "BufferSizeMB";
         private const string KeySenderName = KeyPrefix + "SenderName";
         private const string KeyIncludeSystemInfo = KeyPrefix + "IncludeSystemInfo";
+        private const string KeyEnabled = KeyPrefix + "Enabled";
         private const float DefaultRecordSeconds = 120f;
+        private const int DefaultEnabled = 1;
         private const int DefaultBufferSizeMB = 120;
         private const string DefaultSenderName = "名無しの開発者";
         private const int DefaultIncludeSystemInfo = 1;
@@ -68,6 +70,24 @@ namespace MornLib
             {
 #if UNITY_EDITOR
                 EditorPrefs.SetString(KeySenderName, value);
+#endif
+            }
+        }
+
+        public static bool Enabled
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return EditorPrefs.GetInt(KeyEnabled, DefaultEnabled) != 0;
+#else
+                return true;
+#endif
+            }
+            set
+            {
+#if UNITY_EDITOR
+                EditorPrefs.SetInt(KeyEnabled, value ? 1 : 0);
 #endif
             }
         }

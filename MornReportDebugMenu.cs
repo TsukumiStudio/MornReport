@@ -20,6 +20,14 @@ namespace MornLib
             {
                 using (new GUILayout.VerticalScope())
                 {
+                    var enabled = GUILayout.Toggle(MornReportUtil.Enabled, "レポートを送信する");
+                    if (enabled != MornReportUtil.Enabled)
+                    {
+                        MornReportUtil.Enabled = enabled;
+                    }
+
+                    GUILayout.Space(10);
+                    GUI.enabled = MornReportUtil.Enabled;
                     GUILayout.Label("--- 送信者 ---");
                     var newName = GUILayout.TextField(_senderNameInput);
                     if (newName != _senderNameInput)
@@ -57,6 +65,8 @@ namespace MornLib
                             MornReportUtil.BufferSize = mb * 1024 * 1024;
                         }
                     }
+
+                    GUI.enabled = true;
                 }
             });
         }
