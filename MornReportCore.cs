@@ -37,21 +37,44 @@ namespace MornLib
         /// <summary>録画を停止し、Discord Webhookに動画を送信する</summary>
         public static async UniTask SendAsync(string webhookUrl, string message = null)
         {
-            if (!MornReportUtil.Enabled)
+            var path = await StopAndExportAsync();
+            if (path == null)
             {
                 return;
+            }
+
+            await SendFileAsync(webhookUrl, path, message);
+        }
+
+        /// <summary>録画を停止して動画ファイルを書き出し、そのパスを返す。送信先を自分で決めたい場合に使う</summary>
+        public static async UniTask<string> StopAndExportAsync()
+        {
+            if (!MornReportUtil.Enabled)
+            {
+                return null;
             }
 
             if (_session == null)
             {
                 Debug.LogError("[MornReport] Start()が呼ばれていません");
-                return;
+                return null;
             }
 
             var path = await _session.StopAndExportAsync(_seconds);
             _session.Dispose();
             _session = null;
             Debug.Log($"[MornReport] 動画をエクスポートしました: {path}");
+            return path;
+        }
+
+        /// <summary>書き出し済みの動画をDiscord Webhookに送信する</summary>
+        public static async UniTask SendFileAsync(string webhookUrl, string path, string message = null)
+        {
+            if (!MornReportUtil.Enabled)
+            {
+                return;
+            }
+
             var fileData = File.ReadAllBytes(path);
             var content = BuildContent(message);
             var form = new WWWForm();
